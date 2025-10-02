@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <h1><%= title %></h1>
+        <nav>
+            <div class="nav-primary">
+                <a href="/">Home</a>
+                <a href="/new">New Message</a>
+            </div>
+            <% if (messages.length > 0) { %>
+                <button class="clear-btn" onclick="clearMessages()">Clear Messages</button>
+            <% } %>
+        </nav>
+    </header>
+    <main>
+        <% if (messages.length === 0) { %>
+            <p>No messages yet. <a href="/new">Add the first one!</a></p>
+        <% } else { %>
+            <div class="messages">
+                <% messages.forEach(function(message, index) { %>
+                    <div class="message message-card" onclick="window.location.href='/message/<%= index %>'">
+                        <div class="message-header">
+                            <strong><%= message.user %></strong>
+                        </div>
+                        <div class="message-text">
+                            <%= message.text %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </main>
+    <script>
+        function clearMessages() {
+            if (confirm('Are you sure you want to clear all messages?')) {
+                fetch('/clear', {
+                    method: 'POST'
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
+</body>
+</html>
