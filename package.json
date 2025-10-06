@@ -10,12 +10,17 @@
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
-  "keywords": ["express", "message-board", "web-app"],
+  "keywords": [
+    "express",
+    "message-board",
+    "web-app"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "ejs": "^3.1.9"
+    "@vercel/kv": "^3.0.0",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

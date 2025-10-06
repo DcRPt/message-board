@@ -20,7 +20,7 @@
         <div class="message-detail">
             <div class="message-header">
                 <h2>Message from <strong><%= message.user %></strong></h2>
-                <span class="timestamp">Posted on <%= message.added.toLocaleString() %></span>
+                <span class="timestamp">Posted on <%= new Date(message.added).toLocaleString() %></span>
             </div>
             <div class="message-content">
                 <p><%= message.text %></p>
