@@ -26,17 +26,26 @@
                 <p><%= message.text %></p>
             </div>
             <div class="message-actions">
-                <button class="delete-btn" onclick="deleteMessage('<%= message.id %>')">Delete Message</button>
+                <button class="delete-btn" onclick="deleteMessage('<%= messageId %>')">Delete Message</button>
             </div>
         </div>
     </main>
     <script>
-        function deleteMessage(messageId) {
+        function deleteMessage(index) {
             if (confirm('Are you sure you want to delete this message?')) {
-                fetch(`/message/${messageId}/delete`, {
+                fetch(`/message/${index}/delete`, {
                     method: 'POST'
-                }).then(() => {
-                    window.location.href = '/';
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Failed to delete message.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('An error occurred while deleting the message.');
                 });
             }
         }
