@@ -1,11 +1,27 @@
 const express = require('express');
 const path = require('path');
-const { kv } = require('@vercel/kv');
+const { createClient } = require('redis');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set up EJS as template engine
+// Initialize Redis client
+const redis = createClient({
+  url: process.env.REDIS_URL,
+});
+
+redis.on('error', (err) => console.error('Redis Client Error:', err));
+
+(async () => {
+  try {
+    await redis.connect();
+    console.log('Connected to Redis');
+  } catch (error) {
+    console.error('Redis connection failed:', error);
+  }
+})();
+
+// Set up EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -13,21 +29,20 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Helper function to get messages from KV
+// Helper functions
 async function getMessages() {
   try {
-    const messages = await kv.get('messages');
-    return messages || [];
+    const messages = await redis.get('messages');
+    return messages ? JSON.parse(messages) : [];
   } catch (error) {
     console.error('Error fetching messages:', error);
     return [];
   }
 }
 
-// Helper function to set messages in KV
 async function setMessages(messages) {
   try {
-    await kv.set('messages', messages);
+    await redis.set('messages', JSON.stringify(messages));
   } catch (error) {
     console.error('Error saving messages:', error);
   }
@@ -36,7 +51,7 @@ async function setMessages(messages) {
 // Routes
 app.get('/', async (req, res) => {
   const messages = await getMessages();
-  res.render('index', { title: 'Mini Messageboard', messages: messages });
+  res.render('index', { title: 'Mini Messageboard', messages });
 });
 
 app.get('/new', (req, res) => {
@@ -47,12 +62,10 @@ app.get('/message/:id', async (req, res) => {
   const messageId = parseInt(req.params.id);
   const messages = await getMessages();
   const message = messages[messageId];
-  
-  if (!message) {
-    return res.status(404).send('Message not found');
-  }
-  
-  res.render('message', { title: 'Message Details', message: message, messageId: messageId });
+
+  if (!message) return res.status(404).send('Message not found');
+
+  res.render('message', { title: 'Message Details', message, messageId });
 });
 
 app.post('/message/:id/delete', async (req, res) => {
