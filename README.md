@@ -2,6 +2,10 @@
 
 A simple message board web application built with Node.js, Express, and EJS with persistent storage using Vercel KV.
 
+## Live Demo
+
+https://message-board-lyart-pi.vercel.app/
+
 ## About
 
 This project is a message board where users can post and view messages. Messages are stored persistently using Vercel KV (Redis), ensuring they remain available across server restarts and deployments.
